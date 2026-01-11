@@ -1,3 +1,4 @@
 <Solution>
-  <Project Path="RecipeMan/RecipeMan.csproj" />
+  <Project Path="RecipeApi/RecipeApi.csproj" Id="e9db3744-ef8f-4dd1-9cf2-4efdd5c175a7" />
+  <Project Path="RecipeMan/RecipeMan.csproj" Id="909d1416-0b90-4ef3-b0f3-663bb41657c0" />
 </Solution>
