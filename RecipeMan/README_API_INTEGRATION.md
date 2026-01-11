@@ -34,7 +34,7 @@ Make sure the file `RecipeMan/RecipeApiClient.cs` is included in the project bui
 Before running RecipeMan, ensure the RecipeApi is running:
 1. Set **RecipeApi** as the startup project
 2. Press F5 to run it
-3. The API should start on `https://localhost:5001`
+3. The API should start on `https://localhost:44352`
 
 ### 2. Run RecipeMan
 1. Set **RecipeMan** as the startup project (or run it from the solution)
@@ -44,7 +44,7 @@ Before running RecipeMan, ensure the RecipeApi is running:
 You can change the API base URL in `App.config`:
 ```xml
 <appSettings>
-    <add key="RecipeApiBaseUrl" value="https://localhost:5001" />
+    <add key="RecipeApiBaseUrl" value="https://localhost:44352" />
 </appSettings>
 ```
 
@@ -77,7 +77,7 @@ The application now shows user-friendly error messages if:
 ## Troubleshooting
 
 ### "Failed to load recipes from API" Error
-**Solution**: Make sure RecipeApi is running on https://localhost:5001
+**Solution**: Make sure RecipeApi is running on https://localhost:44352
 
 ### SSL Certificate Errors
 **Solution**: Trust the development certificate:

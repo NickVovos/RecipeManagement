@@ -168,7 +168,7 @@ namespace RecipeApi.Data
                     @RecipeId INT
                 AS
                 BEGIN
-                    SET NOCOUNT ON;
+                    SET NOCOUNT OFF;
                     DELETE FROM dbo.Recipes WHERE Id=@RecipeId;
                 END')");
 
@@ -412,8 +412,88 @@ namespace RecipeApi.Data
             }
             foreach (var recipe in list)
             {
-                recipe.Images = GetRecipeImages(recipe.Id);
-                recipe.Steps = GetRecipeSteps(recipe.Id);
+                recipe.Images = GetRecipeImagesWithoutData(recipe.Id);
+                recipe.Steps = GetRecipeStepsWithoutImages(recipe.Id);
+            }
+            return list;
+        }
+
+        private List<ImageDto> GetRecipeImagesWithoutData(int recipeId)
+        {
+            var list = new List<ImageDto>();
+            using (var conn = new SqlConnection(_connString))
+            using (var cmd = new SqlCommand("SELECT Id, Name FROM dbo.RecipeImages WHERE RecipeId=@RecipeId", conn))
+            {
+                cmd.Parameters.AddWithValue("@RecipeId", recipeId);
+                conn.Open();
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        list.Add(new ImageDto
+                        {
+                            Id = rdr.GetInt32(rdr.GetOrdinal("Id")),
+                            Name = rdr.GetString(rdr.GetOrdinal("Name")),
+                            Data = null
+                        });
+                    }
+                }
+            }
+            return list;
+        }
+
+        private List<StepDto> GetRecipeStepsWithoutImages(int recipeId)
+        {
+            var steps = new List<StepDto>();
+            using (var conn = new SqlConnection(_connString))
+            using (var cmd = new SqlCommand("dbo.spGetRecipeSteps", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@RecipeId", recipeId);
+                conn.Open();
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        steps.Add(new StepDto
+                        {
+                            Id = rdr.GetInt32(rdr.GetOrdinal("Id")),
+                            Title = rdr.GetString(rdr.GetOrdinal("Title")),
+                            Description = rdr.IsDBNull(rdr.GetOrdinal("Description")) ? null : rdr.GetString(rdr.GetOrdinal("Description")),
+                            Order = rdr.GetInt32(rdr.GetOrdinal("Order")),
+                            Duration = rdr.GetInt32(rdr.GetOrdinal("Duration"))
+                        });
+                    }
+                }
+            }
+            foreach (var step in steps)
+            {
+                step.Ingredients = GetStepIngredients(step.Id);
+                step.Images = GetStepImagesWithoutData(step.Id);
+            }
+            return steps;
+        }
+
+        private List<ImageDto> GetStepImagesWithoutData(int stepId)
+        {
+            var list = new List<ImageDto>();
+            using (var conn = new SqlConnection(_connString))
+            using (var cmd = new SqlCommand("SELECT Id, Name FROM dbo.StepImages WHERE StepId=@StepId", conn))
+            {
+                cmd.Parameters.AddWithValue("@StepId", stepId);
+                conn.Open();
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        list.Add(new ImageDto
+                        {
+                            Id = rdr.GetInt32(rdr.GetOrdinal("Id")),
+                            Name = rdr.GetString(rdr.GetOrdinal("Name")),
+                            Data = null
+                        });
+                    }
+                }
             }
             return list;
         }

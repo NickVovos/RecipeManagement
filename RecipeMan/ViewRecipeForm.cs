@@ -122,7 +122,28 @@ namespace RecipeMan
         {
             var item = lbRecipes.SelectedItem as RecipeListItem;
             if (item == null) return;
-            current = item.Data;
+            
+            try
+            {
+                int recipeId = RecipeStore.GetRecipeId(item.Data.Name);
+                if (recipeId > 0)
+                {
+                    var fullRecipe = System.Threading.Tasks.Task.Run(async () => 
+                        await RecipeApiClient.GetRecipeAsync(recipeId)).Result;
+                    current = fullRecipe;
+                }
+                else
+                {
+                    current = item.Data;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load recipe details: {ex.Message}", "Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                current = item.Data;
+            }
+            
             currentRecipeImgIndex = 0;
             currentStepIndex = 0;
             currentStepImgIndex = 0;

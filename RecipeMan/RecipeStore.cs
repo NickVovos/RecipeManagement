@@ -7,45 +7,41 @@ namespace RecipeMan
 {
     public static class RecipeStore
     {
-        private static List<CreateRecipeForm.RecipeData> cachedRecipes = new List<CreateRecipeForm.RecipeData>();
-        private static Dictionary<CreateRecipeForm.RecipeData, int> recipeIdMap = new Dictionary<CreateRecipeForm.RecipeData, int>();
+        private static Dictionary<string, int> _recipeIdMap = new Dictionary<string, int>();
 
         public static IReadOnlyList<CreateRecipeForm.RecipeData> All
         {
             get
             {
-                RefreshCache();
-                return cachedRecipes;
-            }
-        }
-
-        private static void RefreshCache()
-        {
-            try
-            {
-                var apiRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
-                cachedRecipes.Clear();
-                recipeIdMap.Clear();
-
-                foreach (var apiRecipe in apiRecipes)
+                try
                 {
-                    var recipe = new CreateRecipeForm.RecipeData
+                    var apiRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
+                    _recipeIdMap.Clear();
+                    var recipeList = new List<CreateRecipeForm.RecipeData>();
+                    
+                    foreach (var apiRecipe in apiRecipes)
                     {
-                        Name = apiRecipe.Name,
-                        CategoryName = apiRecipe.CategoryName,
-                        Difficulty = apiRecipe.Difficulty,
-                        Description = apiRecipe.Description,
-                        Images = apiRecipe.Images,
-                        Steps = apiRecipe.Steps
-                    };
-                    cachedRecipes.Add(recipe);
-                    recipeIdMap[recipe] = apiRecipe.Id;
+                        var recipeData = new CreateRecipeForm.RecipeData
+                        {
+                            Name = apiRecipe.Name,
+                            CategoryName = apiRecipe.CategoryName,
+                            Difficulty = apiRecipe.Difficulty,
+                            Description = apiRecipe.Description,
+                            Images = apiRecipe.Images,
+                            Steps = apiRecipe.Steps
+                        };
+                        _recipeIdMap[apiRecipe.Name] = apiRecipe.Id;
+                        recipeList.Add(recipeData);
+                    }
+                    
+                    return recipeList;
                 }
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show($"Failed to load recipes from API: {ex.Message}\n\nMake sure the RecipeApi is running on https://localhost:5001", 
-                    "API Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                catch (System.Exception ex)
+                {
+                    MessageBox.Show($"Failed to load recipes from API: {ex.Message}\n\nMake sure the RecipeApi is running on https://localhost:44352", 
+                        "API Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return new List<CreateRecipeForm.RecipeData>();
+                }
             }
         }
 
@@ -54,9 +50,7 @@ namespace RecipeMan
             try
             {
                 var id = Task.Run(async () => await RecipeApiClient.CreateRecipeAsync(recipe)).Result;
-                var cloned = Clone(recipe);
-                cachedRecipes.Add(cloned);
-                recipeIdMap[cloned] = id;
+                _recipeIdMap[recipe.Name] = id;
             }
             catch (System.Exception ex)
             {
@@ -69,26 +63,31 @@ namespace RecipeMan
         {
             try
             {
-                var idx = cachedRecipes.FindIndex(r => ReferenceEquals(r, existing) || r.Name == existing.Name);
-                if (idx < 0)
-                {
-                    MessageBox.Show("Recipe not found in cache", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
                 int id;
-                if (!recipeIdMap.TryGetValue(existing, out id))
+                if (_recipeIdMap.TryGetValue(existing.Name, out id))
                 {
-                    MessageBox.Show("Recipe ID not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    Task.Run(async () => await RecipeApiClient.UpdateRecipeAsync(id, updated)).Wait();
+                    
+                    if (existing.Name != updated.Name)
+                    {
+                        _recipeIdMap.Remove(existing.Name);
+                    }
+                    _recipeIdMap[updated.Name] = id;
                 }
+                else
+                {
+                    var allRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
+                    var apiRecipe = allRecipes.FirstOrDefault(r => r.Name == existing.Name);
+                    
+                    if (apiRecipe == null)
+                    {
+                        MessageBox.Show("Recipe not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
 
-                Task.Run(async () => await RecipeApiClient.UpdateRecipeAsync(id, updated)).Wait();
-
-                var cloned = Clone(updated);
-                cachedRecipes[idx] = cloned;
-                recipeIdMap.Remove(existing);
-                recipeIdMap[cloned] = id;
+                    Task.Run(async () => await RecipeApiClient.UpdateRecipeAsync(apiRecipe.Id, updated)).Wait();
+                    _recipeIdMap[updated.Name] = apiRecipe.Id;
+                }
             }
             catch (System.Exception ex)
             {
@@ -102,26 +101,24 @@ namespace RecipeMan
             try
             {
                 int id;
-                if (!recipeIdMap.TryGetValue(recipe, out id))
-                {
-                    var idx = cachedRecipes.FindIndex(r => r.Name == recipe.Name);
-                    if (idx >= 0)
-                    {
-                        recipeIdMap.TryGetValue(cachedRecipes[idx], out id);
-                    }
-                }
-
-                if (id > 0)
+                if (_recipeIdMap.TryGetValue(recipe.Name, out id))
                 {
                     Task.Run(async () => await RecipeApiClient.DeleteRecipeAsync(id)).Wait();
+                    _recipeIdMap.Remove(recipe.Name);
                 }
-
-                var index = cachedRecipes.FindIndex(r => ReferenceEquals(r, recipe) || r.Name == recipe.Name);
-                if (index >= 0)
+                else
                 {
-                    var removed = cachedRecipes[index];
-                    cachedRecipes.RemoveAt(index);
-                    recipeIdMap.Remove(removed);
+                    var allRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
+                    var apiRecipe = allRecipes.FirstOrDefault(r => r.Name == recipe.Name);
+                    
+                    if (apiRecipe != null && apiRecipe.Id > 0)
+                    {
+                        Task.Run(async () => await RecipeApiClient.DeleteRecipeAsync(apiRecipe.Id)).Wait();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Recipe not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             catch (System.Exception ex)
@@ -150,6 +147,31 @@ namespace RecipeMan
                     Images = s.Images?.Select(i => new CreateRecipeForm.ImageData { Name = i.Name, Data = i.Data }).ToList() ?? new List<CreateRecipeForm.ImageData>()
                 }).ToList() ?? new List<CreateRecipeForm.StepData>()
             };
+        }
+
+        public static int GetRecipeId(string recipeName)
+        {
+            int id;
+            if (_recipeIdMap.TryGetValue(recipeName, out id))
+            {
+                return id;
+            }
+
+            try
+            {
+                var allRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
+                var apiRecipe = allRecipes.FirstOrDefault(r => r.Name == recipeName);
+                if (apiRecipe != null)
+                {
+                    _recipeIdMap[recipeName] = apiRecipe.Id;
+                    return apiRecipe.Id;
+                }
+            }
+            catch
+            {
+            }
+
+            return 0;
         }
     }
 }
