@@ -129,8 +129,7 @@ namespace RecipeMan
                 int recipeId = await RecipeStore.GetRecipeId(item.Data.Name);
                 if (recipeId > 0)
                 {
-                    var fullRecipe = System.Threading.Tasks.Task.Run(async () => 
-                        await RecipeApiClient.GetRecipeAsync(recipeId)).Result;
+                    var fullRecipe = await RecipeApiClient.GetRecipeAsync(recipeId);
                     current = fullRecipe;
                 }
                 else

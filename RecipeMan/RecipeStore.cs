@@ -45,11 +45,11 @@ namespace RecipeMan
 
         }
 
-        public static void Add(CreateRecipeForm.RecipeData recipe)
+        public static async Task Add(CreateRecipeForm.RecipeData recipe)
         {
             try
             {
-                var id = Task.Run(async () => await RecipeApiClient.CreateRecipeAsync(recipe)).Result;
+                var id = await RecipeApiClient.CreateRecipeAsync(recipe);
                 _recipeIdMap[recipe.Name] = id;
             }
             catch (System.Exception ex)
@@ -59,7 +59,7 @@ namespace RecipeMan
             }
         }
 
-        public static void Update(CreateRecipeForm.RecipeData existing, CreateRecipeForm.RecipeData updated)
+        public static async Task Update(CreateRecipeForm.RecipeData existing, CreateRecipeForm.RecipeData updated)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace RecipeMan
                 }
                 else
                 {
-                    var allRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
+                    var allRecipes = await RecipeApiClient.GetAllRecipesAsync();
                     var apiRecipe = allRecipes.FirstOrDefault(r => r.Name == existing.Name);
 
                     if (apiRecipe == null)

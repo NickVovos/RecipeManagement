@@ -245,7 +245,7 @@ namespace RecipeMan
             }
         }
 
-        private void BtnSave_Click(object sender, EventArgs e)
+        private async void BtnSave_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtName.Text))
             {
@@ -265,11 +265,11 @@ namespace RecipeMan
 
             if (existing == null)
             {
-                RecipeStore.Add(recipe);
+                await RecipeStore.Add(recipe);
             }
             else
             {
-                RecipeStore.Update(existing, recipe);
+                await RecipeStore.Update(existing, recipe);
             }
 
             var totalDuration = recipe.Steps.Sum(s => s.Duration);
