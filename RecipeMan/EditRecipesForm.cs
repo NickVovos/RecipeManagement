@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace RecipeMan
@@ -19,7 +20,8 @@ namespace RecipeMan
             Height = 450;
             StartPosition = FormStartPosition.CenterParent;
             InitializeLayout();
-            LoadRecipes();
+  
+            this.Load += async (s, e) => await LoadRecipes();  
         }
 
         private void InitializeLayout()
@@ -39,16 +41,16 @@ namespace RecipeMan
             Controls.Add(btnClose);
         }
 
-        private void LoadRecipes()
+        private async Task LoadRecipes()
         {
             lbRecipes.Items.Clear();
-            foreach (var r in RecipeStore.All)
+            foreach (var r in await RecipeStore.GetAll())
             {
                 lbRecipes.Items.Add(new RecipeListItem(r));
             }
         }
 
-        private void BtnEdit_Click(object sender, EventArgs e)
+        private async void BtnEdit_Click(object sender, EventArgs e)
         {
             var item = lbRecipes.SelectedItem as RecipeListItem;
             if (item == null)
@@ -64,12 +66,12 @@ namespace RecipeMan
                 if (form.ShowDialog(this) == DialogResult.OK)
                 {
                     // Do not overwrite with the pre-edit copy. Just refresh the list from the store.
-                    LoadRecipes();
+                    await LoadRecipes();
                 }
             }
         }
 
-        private void BtnDelete_Click(object sender, EventArgs e)
+        private async void BtnDelete_Click(object sender, EventArgs e)
         {
             var item = lbRecipes.SelectedItem as RecipeListItem;
             if (item == null)
@@ -81,8 +83,8 @@ namespace RecipeMan
             var confirm = MessageBox.Show($"Delete recipe '{item.Data.Name}'?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (confirm == DialogResult.Yes)
             {
-                RecipeStore.Remove(item.Data);
-                LoadRecipes();
+                await RecipeStore.Remove(item.Data);
+                await LoadRecipes();
             }
         }
 

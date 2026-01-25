@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,40 +10,39 @@ namespace RecipeMan
     {
         private static Dictionary<string, int> _recipeIdMap = new Dictionary<string, int>();
 
-        public static IReadOnlyList<CreateRecipeForm.RecipeData> All
+        public static async Task<IReadOnlyList<CreateRecipeForm.RecipeData>> GetAll()
         {
-            get
+
+            try
             {
-                try
+                var apiRecipes = await RecipeApiClient.GetAllRecipesAsync();
+                _recipeIdMap.Clear();
+                var recipeList = new List<CreateRecipeForm.RecipeData>();
+
+                foreach (var apiRecipe in apiRecipes)
                 {
-                    var apiRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
-                    _recipeIdMap.Clear();
-                    var recipeList = new List<CreateRecipeForm.RecipeData>();
-                    
-                    foreach (var apiRecipe in apiRecipes)
+                    var recipeData = new CreateRecipeForm.RecipeData
                     {
-                        var recipeData = new CreateRecipeForm.RecipeData
-                        {
-                            Name = apiRecipe.Name,
-                            CategoryName = apiRecipe.CategoryName,
-                            Difficulty = apiRecipe.Difficulty,
-                            Description = apiRecipe.Description,
-                            Images = apiRecipe.Images,
-                            Steps = apiRecipe.Steps
-                        };
-                        _recipeIdMap[apiRecipe.Name] = apiRecipe.Id;
-                        recipeList.Add(recipeData);
-                    }
-                    
-                    return recipeList;
+                        Name = apiRecipe.Name,
+                        CategoryName = apiRecipe.CategoryName,
+                        Difficulty = apiRecipe.Difficulty,
+                        Description = apiRecipe.Description,
+                        Images = apiRecipe.Images,
+                        Steps = apiRecipe.Steps
+                    };
+                    _recipeIdMap[apiRecipe.Name] = apiRecipe.Id;
+                    recipeList.Add(recipeData);
                 }
-                catch (System.Exception ex)
-                {
-                    MessageBox.Show($"Failed to load recipes from API: {ex.Message}\n\nMake sure the RecipeApi is running on https://localhost:44352", 
-                        "API Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return new List<CreateRecipeForm.RecipeData>();
-                }
+
+                return recipeList;
             }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Failed to load recipes from API: {ex.Message}\n\nMake sure the RecipeApi is running on https://localhost:44352",
+                    "API Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return new List<CreateRecipeForm.RecipeData>();
+            }
+
         }
 
         public static void Add(CreateRecipeForm.RecipeData recipe)
@@ -67,7 +67,7 @@ namespace RecipeMan
                 if (_recipeIdMap.TryGetValue(existing.Name, out id))
                 {
                     Task.Run(async () => await RecipeApiClient.UpdateRecipeAsync(id, updated)).Wait();
-                    
+
                     if (existing.Name != updated.Name)
                     {
                         _recipeIdMap.Remove(existing.Name);
@@ -78,7 +78,7 @@ namespace RecipeMan
                 {
                     var allRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
                     var apiRecipe = allRecipes.FirstOrDefault(r => r.Name == existing.Name);
-                    
+
                     if (apiRecipe == null)
                     {
                         MessageBox.Show("Recipe not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -96,7 +96,7 @@ namespace RecipeMan
             }
         }
 
-        public static void Remove(CreateRecipeForm.RecipeData recipe)
+        public static async Task Remove(CreateRecipeForm.RecipeData recipe)
         {
             try
             {
@@ -108,12 +108,12 @@ namespace RecipeMan
                 }
                 else
                 {
-                    var allRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
+                    var allRecipes = await RecipeApiClient.GetAllRecipesAsync();
                     var apiRecipe = allRecipes.FirstOrDefault(r => r.Name == recipe.Name);
-                    
+
                     if (apiRecipe != null && apiRecipe.Id > 0)
                     {
-                        Task.Run(async () => await RecipeApiClient.DeleteRecipeAsync(apiRecipe.Id)).Wait();
+                        await RecipeApiClient.DeleteRecipeAsync(apiRecipe.Id);
                     }
                     else
                     {
@@ -149,7 +149,7 @@ namespace RecipeMan
             };
         }
 
-        public static int GetRecipeId(string recipeName)
+        public static async Task<int> GetRecipeId(string recipeName)
         {
             int id;
             if (_recipeIdMap.TryGetValue(recipeName, out id))
@@ -157,19 +157,14 @@ namespace RecipeMan
                 return id;
             }
 
-            try
+            var allRecipes = await RecipeApiClient.GetAllRecipesAsync();
+            var apiRecipe = allRecipes.FirstOrDefault(r => r.Name == recipeName);
+            if (apiRecipe != null)
             {
-                var allRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
-                var apiRecipe = allRecipes.FirstOrDefault(r => r.Name == recipeName);
-                if (apiRecipe != null)
-                {
-                    _recipeIdMap[recipeName] = apiRecipe.Id;
-                    return apiRecipe.Id;
-                }
+                _recipeIdMap[recipeName] = apiRecipe.Id;
+                return apiRecipe.Id;
             }
-            catch
-            {
-            }
+
 
             return 0;
         }

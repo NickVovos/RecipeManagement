@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace RecipeMan
@@ -49,7 +50,7 @@ namespace RecipeMan
             Height = 750;
             StartPosition = FormStartPosition.CenterParent;
             InitializeLayout();
-            LoadRecipes();
+            this.Load += async (s, e) => await LoadRecipes();
         }
 
         private void InitializeLayout()
@@ -109,23 +110,23 @@ namespace RecipeMan
             });
         }
 
-        private void LoadRecipes()
+        private async Task LoadRecipes()
         {
             lbRecipes.Items.Clear();
-            foreach (var r in RecipeStore.All)
+            foreach (var r in await RecipeStore.GetAll())
             {
                 lbRecipes.Items.Add(new RecipeListItem(r));
             }
         }
 
-        private void LbRecipes_SelectedIndexChanged(object sender, EventArgs e)
+        private async void LbRecipes_SelectedIndexChanged(object sender, EventArgs e)
         {
             var item = lbRecipes.SelectedItem as RecipeListItem;
             if (item == null) return;
             
             try
             {
-                int recipeId = RecipeStore.GetRecipeId(item.Data.Name);
+                int recipeId = await RecipeStore.GetRecipeId(item.Data.Name);
                 if (recipeId > 0)
                 {
                     var fullRecipe = System.Threading.Tasks.Task.Run(async () => 
