@@ -66,7 +66,7 @@ namespace RecipeMan
                 int id;
                 if (_recipeIdMap.TryGetValue(existing.Name, out id))
                 {
-                    Task.Run(async () => await RecipeApiClient.UpdateRecipeAsync(id, updated)).Wait();
+                    await RecipeApiClient.UpdateRecipeAsync(id, updated);
 
                     if (existing.Name != updated.Name)
                     {
@@ -85,7 +85,7 @@ namespace RecipeMan
                         return;
                     }
 
-                    Task.Run(async () => await RecipeApiClient.UpdateRecipeAsync(apiRecipe.Id, updated)).Wait();
+                    await RecipeApiClient.UpdateRecipeAsync(apiRecipe.Id, updated);
                     _recipeIdMap[updated.Name] = apiRecipe.Id;
                 }
             }
@@ -103,7 +103,7 @@ namespace RecipeMan
                 int id;
                 if (_recipeIdMap.TryGetValue(recipe.Name, out id))
                 {
-                    Task.Run(async () => await RecipeApiClient.DeleteRecipeAsync(id)).Wait();
+                    await RecipeApiClient.DeleteRecipeAsync(id);
                     _recipeIdMap.Remove(recipe.Name);
                 }
                 else
