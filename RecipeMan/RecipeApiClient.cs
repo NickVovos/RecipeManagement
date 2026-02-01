@@ -24,7 +24,7 @@ namespace RecipeMan
             };
         }
 
-        public static async Task<List<RecipeData>> GetAllRecipesAsync()
+        public static async Task<List<RecipeDto>> GetAllRecipesAsync()
         {
             try
             {
@@ -40,7 +40,7 @@ namespace RecipeMan
             }
         }
 
-        public static async Task<RecipeData> GetRecipeAsync(int id)
+        public static async Task<RecipeDto> GetRecipeAsync(int id)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace RecipeMan
             }
         }
 
-        public static async Task<int> CreateRecipeAsync(CreateRecipeForm.RecipeData recipe)
+        public static async Task<int> CreateRecipeAsync(RecipeDto recipe)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace RecipeMan
             }
         }
 
-        public static async Task UpdateRecipeAsync(int id, CreateRecipeForm.RecipeData recipe)
+        public static async Task UpdateRecipeAsync(int id, RecipeDto recipe)
         {
             try
             {
@@ -105,24 +105,24 @@ namespace RecipeMan
             }
         }
 
-        private static RecipeData MapToRecipeData(RecipeDto dto)
+        private static RecipeDto MapToRecipeData(RecipeDto dto)
         {
-            var recipe = new RecipeData
+            var recipe = new RecipeDto()
             {
                 Id = dto.Id,
                 Name = dto.Name,
                 CategoryName = dto.CategoryName,
-                Difficulty = (CreateRecipeForm.Difficulty)dto.Difficulty,
+                Difficulty = (Difficulty)dto.Difficulty,
                 Description = dto.Description,
-                Images = new List<CreateRecipeForm.ImageData>(),
-                Steps = new List<CreateRecipeForm.StepData>()
+                Images = new List<ImageDto>(),
+                Steps = new List<StepDto>()
             };
 
             if (dto.Images != null)
             {
                 foreach (var img in dto.Images)
                 {
-                    recipe.Images.Add(new CreateRecipeForm.ImageData
+                    recipe.Images.Add(new ImageDto
                     {
                         Name = img.Name,
                         Data = img.Data
@@ -134,21 +134,21 @@ namespace RecipeMan
             {
                 foreach (var step in dto.Steps)
                 {
-                    var stepData = new CreateRecipeForm.StepData
+                    var stepData = new StepDto
                     {
                         Order = step.Order,
                         Title = step.Title,
                         Description = step.Description,
                         Duration = step.Duration,
-                        Ingredients = new List<CreateRecipeForm.IngredientData>(),
-                        Images = new List<CreateRecipeForm.ImageData>()
+                        Ingredients = new List<StepIngredientDto>(),
+                        Images = new List<ImageDto>()
                     };
 
                     if (step.Ingredients != null)
                     {
                         foreach (var ing in step.Ingredients)
                         {
-                            stepData.Ingredients.Add(new CreateRecipeForm.IngredientData
+                            stepData.Ingredients.Add(new StepIngredientDto
                             {
                                 Quantity = ing.Quantity,
                                 Name = ing.Name
@@ -160,7 +160,7 @@ namespace RecipeMan
                     {
                         foreach (var img in step.Images)
                         {
-                            stepData.Images.Add(new CreateRecipeForm.ImageData
+                            stepData.Images.Add(new ImageDto
                             {
                                 Name = img.Name,
                                 Data = img.Data
@@ -175,7 +175,7 @@ namespace RecipeMan
             return recipe;
         }
 
-        private static RecipeDto MapToRecipeDto(CreateRecipeForm.RecipeData recipe)
+        private static RecipeDto MapToRecipeDto(RecipeDto recipe)
         {
             var dto = new RecipeDto
             {
@@ -244,9 +244,5 @@ namespace RecipeMan
             return dto;
         }
 
-        public class RecipeData : CreateRecipeForm.RecipeData
-        {
-            public int Id { get; set; }
-        }
     }
 }

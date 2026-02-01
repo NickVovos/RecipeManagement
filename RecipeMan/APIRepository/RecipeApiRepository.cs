@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Common.DTOs;
 using Common.Models;
 
 namespace RecipeMan.Repository
@@ -76,7 +77,7 @@ namespace RecipeMan.Repository
             }
         }
 
-        private Recipe MapFromApiData(RecipeApiClient.RecipeData apiData)
+        private Recipe MapFromApiData(RecipeDto apiData)
         {
             return new Recipe
             {
@@ -110,37 +111,37 @@ namespace RecipeMan.Repository
             };
         }
 
-        private RecipeApiClient.RecipeData MapToApiData(Recipe recipe)
+        private RecipeDto MapToApiData(Recipe recipe)
         {
-            return new RecipeApiClient.RecipeData
+            return new RecipeDto
             {
                 Id = recipe.Id,
                 Name = recipe.Name,
                 CategoryName = recipe.CategoryName,
-                Difficulty = (CreateRecipeForm.Difficulty)recipe.Difficulty,
+                Difficulty = (Difficulty)recipe.Difficulty,
                 Description = recipe.Description,
-                Images = recipe.Images?.Select(i => new CreateRecipeForm.ImageData
+                Images = recipe.Images?.Select(i => new ImageDto()
                 {
                     Name = i.Name,
                     Data = i.Data
-                }).ToList() ?? new List<CreateRecipeForm.ImageData>(),
-                Steps = recipe.Steps?.Select(s => new CreateRecipeForm.StepData
+                }).ToList() ?? new List<ImageDto>(),
+                Steps = recipe.Steps?.Select(s => new StepDto
                 {
                     Order = s.Order,
                     Title = s.Title,
                     Description = s.Description,
                     Duration = s.Duration,
-                    Ingredients = s.Ingredients?.Select(ing => new CreateRecipeForm.IngredientData
+                    Ingredients = s.Ingredients?.Select(ing => new StepIngredientDto()
                     {
                         Quantity = ing.Quantity,
                         Name = ing.Name
-                    }).ToList() ?? new List<CreateRecipeForm.IngredientData>(),
-                    Images = s.Images?.Select(i => new CreateRecipeForm.ImageData
+                    }).ToList() ?? new List<StepIngredientDto>(),
+                    Images = s.Images?.Select(i => new ImageDto
                     {
                         Name = i.Name,
                         Data = i.Data
-                    }).ToList() ?? new List<CreateRecipeForm.ImageData>()
-                }).ToList() ?? new List<CreateRecipeForm.StepData>()
+                    }).ToList() ?? new List<ImageDto>()
+                }).ToList() ?? new List<StepDto>()
             };
         }
     }

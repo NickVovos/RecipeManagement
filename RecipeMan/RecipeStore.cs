@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Common.DTOs;
 using RecipeMan.Services;
 using Common.Models;
 
@@ -11,19 +12,19 @@ namespace RecipeMan
     {
         private static readonly IRecipeService _recipeService = ServiceFactory.GetRecipeService();
 
-        public static async Task<IReadOnlyList<CreateRecipeForm.RecipeData>> GetAll()
+        public static async Task<IReadOnlyList<RecipeDto>> GetAll()
         {
             var recipes = await _recipeService.GetAllRecipesAsync();
             return recipes.Select(ConvertToFormData).ToList();
         }
 
-        public static async Task Add(CreateRecipeForm.RecipeData recipe)
+        public static async Task Add(RecipeDto recipe)
         {
             var domainRecipe = ConvertToDomainModel(recipe);
             await _recipeService.CreateRecipeAsync(domainRecipe);
         }
 
-        public static async Task Update(CreateRecipeForm.RecipeData existing, CreateRecipeForm.RecipeData updated)
+        public static async Task Update(RecipeDto existing, RecipeDto updated)
         {
             int id = await _recipeService.GetRecipeIdByNameAsync(existing.Name);
             if (id == 0)
@@ -34,7 +35,7 @@ namespace RecipeMan
             await _recipeService.UpdateRecipeAsync(domainRecipe);
         }
 
-        public static async Task Remove(CreateRecipeForm.RecipeData recipe)
+        public static async Task Remove(RecipeDto recipe)
         {
             int id = await _recipeService.GetRecipeIdByNameAsync(recipe.Name);
             if (id == 0)
@@ -43,7 +44,7 @@ namespace RecipeMan
             await _recipeService.DeleteRecipeAsync(id);
         }
 
-        public static CreateRecipeForm.RecipeData Clone(CreateRecipeForm.RecipeData recipe)
+        public static RecipeDto Clone(RecipeDto recipe)
         {
             var domainRecipe = ConvertToDomainModel(recipe);
             var cloned = (Recipe)domainRecipe.Clone();
@@ -55,40 +56,40 @@ namespace RecipeMan
             return await _recipeService.GetRecipeIdByNameAsync(recipeName);
         }
 
-        private static CreateRecipeForm.RecipeData ConvertToFormData(Recipe recipe)
+        private static RecipeDto ConvertToFormData(Recipe recipe)
         {
-            return new CreateRecipeForm.RecipeData
+            return new RecipeDto
             {
                 Name = recipe.Name,
                 CategoryName = recipe.CategoryName,
-                Difficulty = (CreateRecipeForm.Difficulty)recipe.Difficulty,
+                Difficulty = (Difficulty)recipe.Difficulty,
                 Description = recipe.Description,
-                Images = recipe.Images?.Select(i => new CreateRecipeForm.ImageData
+                Images = recipe.Images?.Select(i => new ImageDto
                 {
                     Name = i.Name,
                     Data = i.Data
-                }).ToList() ?? new List<CreateRecipeForm.ImageData>(),
-                Steps = recipe.Steps?.Select(s => new CreateRecipeForm.StepData
+                }).ToList() ?? new List<ImageDto>(),
+                Steps = recipe.Steps?.Select(s => new StepDto
                 {
                     Order = s.Order,
                     Title = s.Title,
                     Description = s.Description,
                     Duration = s.Duration,
-                    Ingredients = s.Ingredients?.Select(ing => new CreateRecipeForm.IngredientData
+                    Ingredients = s.Ingredients?.Select(ing => new StepIngredientDto()
                     {
                         Quantity = ing.Quantity,
                         Name = ing.Name
-                    }).ToList() ?? new List<CreateRecipeForm.IngredientData>(),
-                    Images = s.Images?.Select(i => new CreateRecipeForm.ImageData
+                    }).ToList() ?? new List<StepIngredientDto>(),
+                    Images = s.Images?.Select(i => new ImageDto
                     {
                         Name = i.Name,
                         Data = i.Data
-                    }).ToList() ?? new List<CreateRecipeForm.ImageData>()
-                }).ToList() ?? new List<CreateRecipeForm.StepData>()
+                    }).ToList() ?? new List<ImageDto>()
+                }).ToList() ?? new List<StepDto>()
             };
         }
 
-        private static Recipe ConvertToDomainModel(CreateRecipeForm.RecipeData formData)
+        private static Recipe ConvertToDomainModel(RecipeDto formData)
         {
             return new Recipe
             {

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Common.DTOs;
 
 namespace RecipeMan
 {
@@ -88,8 +89,8 @@ namespace RecipeMan
 
         private class RecipeListItem
         {
-            public CreateRecipeForm.RecipeData Data { get; }
-            public RecipeListItem(CreateRecipeForm.RecipeData data) { Data = data; }
+            public RecipeDto Data { get; }
+            public RecipeListItem(RecipeDto data) { Data = data; }
             public override string ToString()
             {
                 var total = Data?.Steps?.Sum(s => s.Duration) ?? 0;

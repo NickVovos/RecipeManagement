@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Common.DTOs;
 
 namespace RecipeMan
 {
@@ -38,7 +39,7 @@ namespace RecipeMan
         private Label lblStepIndex;
         private Label lblStepImgIndex;
 
-        private CreateRecipeForm.RecipeData current;
+        private RecipeDto current;
         private int currentRecipeImgIndex = 0;
         private int currentStepIndex = 0;
         private int currentStepImgIndex = 0;
@@ -164,7 +165,7 @@ namespace RecipeMan
 
         private void RenderRecipeImage()
         {
-            var imgs = current.Images ?? new List<CreateRecipeForm.ImageData>();
+            var imgs = current.Images ?? new List<ImageDto>();
             if (imgs.Count == 0)
             {
                 pbRecipeImage.Image = null;
@@ -182,7 +183,7 @@ namespace RecipeMan
 
         private void RenderStep()
         {
-            var steps = current.Steps ?? new List<CreateRecipeForm.StepData>();
+            var steps = current.Steps ?? new List<StepDto>();
             if (steps.Count == 0)
             {
                 lblStepTitle.Text = "No steps";
@@ -205,9 +206,9 @@ namespace RecipeMan
             lblStepDuration.Text = $"Duration: {step.Duration} min";
             lblStepIndex.Text = $"Step {currentStepIndex + 1}/{steps.Count}";
             txtStepDescription.Text = step.Description;
-            lblStepIngredients.Text = "Ingredients: " + string.Join(", ", (step.Ingredients ?? new List<CreateRecipeForm.IngredientData>()).Select(i => i.Quantity + " " + i.Name));
+            lblStepIngredients.Text = "Ingredients: " + string.Join(", ", (step.Ingredients ?? new List<StepIngredientDto>()).Select(i => i.Quantity + " " + i.Name));
 
-            var imgs = step.Images ?? new List<CreateRecipeForm.ImageData>();
+            var imgs = step.Images ?? new List<ImageDto>();
             if (imgs.Count == 0)
             {
                 pbStepImage.Image = null;
@@ -256,7 +257,7 @@ namespace RecipeMan
 
         private void UpdateProgress()
         {
-            var steps = current?.Steps ?? new List<CreateRecipeForm.StepData>();
+            var steps = current?.Steps ?? new List<StepDto>();
             var total = steps.Sum(s => Math.Max(0, s.Duration));
             if (total <= 0)
             {
@@ -291,8 +292,8 @@ namespace RecipeMan
 
         private class RecipeListItem
         {
-            public CreateRecipeForm.RecipeData Data { get; }
-            public RecipeListItem(CreateRecipeForm.RecipeData data) { Data = data; }
+            public RecipeDto Data { get; }
+            public RecipeListItem(RecipeDto data) { Data = data; }
             public override string ToString()
             {
                 var total = Data?.Steps?.Sum(s => s.Duration) ?? 0;

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Common.DTOs;
 
 namespace RecipeMan
 {
@@ -23,9 +24,9 @@ namespace RecipeMan
         private Button btnSave;
         private Button btnCancel;
 
-        private readonly List<StepData> steps = new List<StepData>();
-        private readonly List<ImageData> recipeImages = new List<ImageData>();
-        private RecipeData existing;
+        private readonly List<StepDto> steps = new List<StepDto>();
+        private readonly List<ImageDto> recipeImages = new List<ImageDto>();
+        private RecipeDto existing;
 
         public CreateRecipeForm()
         {
@@ -36,7 +37,7 @@ namespace RecipeMan
             InitializeLayout();
         }
 
-        public CreateRecipeForm(RecipeData recipe) : this()
+        public CreateRecipeForm(RecipeDto recipe) : this()
         {
             Text = "Edit Recipe";
             existing = recipe;
@@ -109,7 +110,7 @@ namespace RecipeMan
             });
         }
 
-        private void Populate(RecipeData recipe)
+        private void Populate(RecipeDto recipe)
         {
             if (recipe == null) return;
             txtName.Text = recipe.Name;
@@ -120,19 +121,19 @@ namespace RecipeMan
             recipeImages.Clear();
             if (recipe.Images != null)
             {
-                recipeImages.AddRange(recipe.Images.Select(i => new ImageData { Name = i.Name, Data = i.Data }));
+                recipeImages.AddRange(recipe.Images.Select(i => new ImageDto { Name = i.Name, Data = i.Data }));
             }
             RefreshRecipeImages();
             if (recipe.Steps != null)
             {
-                steps.AddRange(recipe.Steps.Select(s => new StepData
+                steps.AddRange(recipe.Steps.Select(s => new StepDto
                 {
                     Order = s.Order,
                     Title = s.Title,
                     Description = s.Description,
                     Duration = s.Duration,
-                    Ingredients = s.Ingredients?.Select(i => new IngredientData { Quantity = i.Quantity, Name = i.Name }).ToList() ?? new List<IngredientData>(),
-                    Images = s.Images?.Select(i => new ImageData { Name = i.Name, Data = i.Data }).ToList() ?? new List<ImageData>()
+                    Ingredients = s.Ingredients?.Select(i => new StepIngredientDto() { Quantity = i.Quantity, Name = i.Name }).ToList() ?? new List<StepIngredientDto>(),
+                    Images = s.Images?.Select(i => new ImageDto { Name = i.Name, Data = i.Data }).ToList() ?? new List<ImageDto>()
                 }));
             }
             for (int i = 0; i < steps.Count; i++) steps[i].Order = i + 1;
@@ -145,7 +146,7 @@ namespace RecipeMan
             if (ofd.ShowDialog(this) == DialogResult.OK)
             {
                 var bytes = File.ReadAllBytes(ofd.FileName);
-                recipeImages.Add(new ImageData { Name = Path.GetFileName(ofd.FileName), Data = bytes });
+                recipeImages.Add(new ImageDto { Name = Path.GetFileName(ofd.FileName), Data = bytes });
                 RefreshRecipeImages();
             }
         }
@@ -203,16 +204,16 @@ namespace RecipeMan
             }
         }
 
-        private CreateRecipeForm.StepData CloneStep(CreateRecipeForm.StepData s)
+        private StepDto CloneStep(StepDto s)
         {
-            return new StepData
+            return new StepDto
             {
                 Order = s.Order,
                 Title = s.Title,
                 Description = s.Description,
                 Duration = s.Duration,
-                Ingredients = s.Ingredients?.Select(i => new IngredientData { Quantity = i.Quantity, Name = i.Name }).ToList() ?? new List<IngredientData>(),
-                Images = s.Images?.Select(i => new ImageData { Name = i.Name, Data = i.Data }).ToList() ?? new List<ImageData>()
+                Ingredients = s.Ingredients?.Select(i => new StepIngredientDto() { Quantity = i.Quantity, Name = i.Name }).ToList() ?? new List<StepIngredientDto>(),
+                Images = s.Images?.Select(i => new ImageDto { Name = i.Name, Data = i.Data }).ToList() ?? new List<ImageDto>()
             };
         }
 
@@ -253,7 +254,7 @@ namespace RecipeMan
                 return;
             }
 
-            var recipe = new RecipeData
+            var recipe = new RecipeDto
             {
                 Name = txtName.Text.Trim(),
                 CategoryName = txtCategory.Text.Trim(),
@@ -276,40 +277,6 @@ namespace RecipeMan
             MessageBox.Show($"Recipe saved: {recipe.Name}\nCategory: {recipe.CategoryName}\nDifficulty: {recipe.Difficulty}\nTotal Duration: {totalDuration} min\nSteps: {recipe.Steps.Count}\nImages: {recipe.Images.Count}");
             DialogResult = DialogResult.OK;
             Close();
-        }
-
-        public enum Difficulty { Easy, Medium, Hard }
-
-        public class RecipeData
-        {
-            public string Name { get; set; }
-            public string CategoryName { get; set; }
-            public Difficulty Difficulty { get; set; }
-            public string Description { get; set; }
-            public List<StepData> Steps { get; set; }
-            public List<ImageData> Images { get; set; } = new List<ImageData>();
-        }
-
-        public class StepData
-        {
-            public int Order { get; set; }
-            public string Title { get; set; }
-            public string Description { get; set; }
-            public int Duration { get; set; }
-            public List<IngredientData> Ingredients { get; set; } = new List<IngredientData>();
-            public List<ImageData> Images { get; set; } = new List<ImageData>();
-        }
-
-        public class IngredientData
-        {
-            public string Quantity { get; set; }
-            public string Name { get; set; }
-        }
-
-        public class ImageData
-        {
-            public string Name { get; set; }
-            public byte[] Data { get; set; }
         }
     }
 }
