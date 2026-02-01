@@ -6,11 +6,7 @@ using Common.Models;
 
 namespace RecipeMan.Repository
 {
-    /// <summary>
-    /// Repository implementation using API
-    /// High Cohesion: Focuses only on data access via API
-    /// </summary>
-    public class RecipeApiRepository : IRecipeRepository
+    public class RecipeApiRepository : IRecipeApiRepository
     {
         public RecipeApiRepository()
         {
@@ -80,7 +76,6 @@ namespace RecipeMan.Repository
             }
         }
 
-        // Mapping methods
         private Recipe MapFromApiData(RecipeApiClient.RecipeData apiData)
         {
             return new Recipe

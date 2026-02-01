@@ -2,9 +2,6 @@ using System;
 
 namespace Common.Models
 {
-    /// <summary>
-    /// Domain model for Image - inherits from BaseEntity
-    /// </summary>
     public class Image : BaseEntity
     {
         public string Name { get; set; }
@@ -18,7 +15,6 @@ namespace Common.Models
             Data = data;
         }
 
-        // Information Expert: Image knows its size
         public int GetSizeInBytes()
         {
             return Data?.Length ?? 0;

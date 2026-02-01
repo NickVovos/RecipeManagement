@@ -18,7 +18,6 @@ namespace RecipeApi.Seed
             var repo = new SqlRepository(config);
             if (repo.GetAllRecipes().Any()) return;
 
-            // Load available image files
             if (Directory.Exists(ImagePath))
             {
                 _imageFiles = Directory.GetFiles(ImagePath, "*.*")
@@ -31,7 +30,6 @@ namespace RecipeApi.Seed
                 _imageFiles = new string[0];
             }
 
-            // Create multiple recipes with varying complexity
             CreateLasagnaRecipe(repo);
             CreateChickenCurryRecipe(repo);
             CreateChocolateCakeRecipe(repo);

@@ -7,12 +7,6 @@ using Common.Models;
 
 namespace RecipeMan
 {
-    /// <summary>
-    /// REFACTORED: Now acts as a facade/adapter between UI and Service layer
-    /// High Cohesion: Focused on adapting between domain models and UI models
-    /// Low Coupling: No direct API calls, no MessageBox (UI concerns removed)
-    /// Protected Variations: UI is protected from changes in domain/service layer
-    /// </summary>
     public static class RecipeStore
     {
         private static readonly IRecipeService _recipeService = ServiceFactory.GetRecipeService();

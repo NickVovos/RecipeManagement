@@ -2,10 +2,6 @@ using System;
 
 namespace Common.Models
 {
-    /// <summary>
-    /// Domain model for Ingredient
-    /// Simple value object - doesn't need BaseEntity as it has no independent identity
-    /// </summary>
     public class Ingredient : ICloneable
     {
         public string Quantity { get; set; }

@@ -7,16 +7,11 @@ using RecipeMan.Repository;
 
 namespace RecipeMan.Services
 {
-    /// <summary>
-    /// Service implementation - Controller GRASP pattern
-    /// High Cohesion: Focuses only on business logic coordination
-    /// Low Coupling: Depends on abstraction (IRecipeRepository)
-    /// </summary>
     public class RecipeService : IRecipeService
     {
-        private readonly IRecipeRepository _repository;
+        private readonly IRecipeApiRepository _repository;
 
-        public RecipeService(IRecipeRepository repository)
+        public RecipeService(IRecipeApiRepository repository)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }

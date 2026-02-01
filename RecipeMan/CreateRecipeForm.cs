@@ -278,7 +278,6 @@ namespace RecipeMan
             Close();
         }
 
-        // Simple data classes used by the form
         public enum Difficulty { Easy, Medium, Hard }
 
         public class RecipeData

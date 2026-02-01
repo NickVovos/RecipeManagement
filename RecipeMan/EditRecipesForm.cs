@@ -59,13 +59,11 @@ namespace RecipeMan
                 return;
             }
 
-            // Work on a copy in the edit form, but let the form handle saving/updating to the store.
             var recipeCopy = RecipeStore.Clone(item.Data);
             using (var form = new CreateRecipeForm(recipeCopy))
             {
                 if (form.ShowDialog(this) == DialogResult.OK)
                 {
-                    // Do not overwrite with the pre-edit copy. Just refresh the list from the store.
                     await LoadRecipes();
                 }
             }

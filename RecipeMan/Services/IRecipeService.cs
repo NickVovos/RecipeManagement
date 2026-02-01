@@ -4,11 +4,6 @@ using Common.Models;
 
 namespace RecipeMan.Services
 {
-    /// <summary>
-    /// Service interface - Polymorphism GRASP pattern
-    /// Allows different implementations (API, local DB, mock, etc.)
-    /// Controller pattern - coordinates recipe operations
-    /// </summary>
     public interface IRecipeService
     {
         Task<IReadOnlyList<Recipe>> GetAllRecipesAsync();

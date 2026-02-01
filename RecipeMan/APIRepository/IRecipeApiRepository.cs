@@ -4,11 +4,7 @@ using Common.Models;
 
 namespace RecipeMan.Repository
 {
-    /// <summary>
-    /// Repository interface - Polymorphism pattern
-    /// Abstracts data access layer
-    /// </summary>
-    public interface IRecipeRepository
+    public interface IRecipeApiRepository
     {
         Task<IReadOnlyList<Recipe>> GetAllAsync();
         Task<Recipe> GetByIdAsync(int id);

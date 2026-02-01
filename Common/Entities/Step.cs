@@ -4,9 +4,6 @@ using System.Linq;
 
 namespace Common.Models
 {
-    /// <summary>
-    /// Domain model for Step - inherits from BaseEntity
-    /// </summary>
     public class Step : BaseEntity
     {
         public int Order { get; set; }
@@ -26,7 +23,6 @@ namespace Common.Models
             Duration = duration;
         }
 
-        // Information Expert: Step knows how to format its ingredients
         public string GetFormattedIngredients()
         {
             if (Ingredients == null || Ingredients.Count == 0)

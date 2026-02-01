@@ -10,6 +10,11 @@
     <NoWarn>CA1416</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Models\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Models\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="JsonConverter.Abstractions" Version="0.8.0" />
     <PackageReference Include="JsonConverter.Newtonsoft.Json" Version="0.8.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
@@ -17,8 +22,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
   </ItemGroup>
 </Project>

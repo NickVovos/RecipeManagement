@@ -5,10 +5,6 @@ using Common.Validation;
 
 namespace Common.Models
 {
-    /// <summary>
-    /// Domain model for Recipe - Information Expert pattern
-    /// Contains logic for manipulating its own data
-    /// </summary>
     public class Recipe : BaseEntity
     {
         public string Name { get; set; }
