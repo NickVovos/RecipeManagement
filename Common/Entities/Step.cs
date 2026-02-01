@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RecipeMan.Models
+namespace Common.Models
 {
     /// <summary>
     /// Domain model for Step - inherits from BaseEntity

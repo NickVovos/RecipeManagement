@@ -1,6 +1,6 @@
 using System;
 
-namespace RecipeMan.Models
+namespace Common.Models
 {
     /// <summary>
     /// Domain model for Image - inherits from BaseEntity

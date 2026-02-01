@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RecipeMan.Services;
-using RecipeMan.Models;
+using Common.Models;
 
 namespace RecipeMan
 {
@@ -102,11 +102,11 @@ namespace RecipeMan
                 CategoryName = formData.CategoryName,
                 Difficulty = (RecipeDifficulty)formData.Difficulty,
                 Description = formData.Description,
-                Images = formData.Images?.Select(i => new Models.Image
+                Images = formData.Images?.Select(i => new Image
                 {
                     Name = i.Name,
                     Data = i.Data
-                }).ToList() ?? new List<Models.Image>(),
+                }).ToList() ?? new List<Image>(),
                 Steps = formData.Steps?.Select(s => new Step
                 {
                     Order = s.Order,
@@ -118,11 +118,11 @@ namespace RecipeMan
                         Quantity = ing.Quantity,
                         Name = ing.Name
                     }).ToList() ?? new List<Ingredient>(),
-                    Images = s.Images?.Select(i => new Models.Image
+                    Images = s.Images?.Select(i => new Image
                     {
                         Name = i.Name,
                         Data = i.Data
-                    }).ToList() ?? new List<Models.Image>()
+                    }).ToList() ?? new List<Image>()
                 }).ToList() ?? new List<Step>()
             };
         }

@@ -1,6 +1,6 @@
 using System;
 
-namespace RecipeMan.Models
+namespace Common.Models
 {
     /// <summary>
     /// Base class for all entities with ID

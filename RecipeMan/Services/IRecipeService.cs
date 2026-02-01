@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using RecipeMan.Models;
+using Common.Models;
 
 namespace RecipeMan.Services
 {

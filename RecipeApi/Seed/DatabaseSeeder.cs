@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using RecipeApi.Data;
-using RecipeApi.Models;
+using Common.DTOs;
 using System;
 using System.IO;
 using System.Linq;

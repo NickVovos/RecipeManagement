@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Common.DTOs;
 
 namespace RecipeMan
 {
@@ -180,7 +181,7 @@ namespace RecipeMan
             {
                 Name = recipe.Name,
                 CategoryName = recipe.CategoryName,
-                Difficulty = (int)recipe.Difficulty,
+                Difficulty = (Common.DTOs.Difficulty)recipe.Difficulty,
                 Description = recipe.Description,
                 Images = new List<ImageDto>(),
                 Steps = new List<StepDto>()
@@ -246,41 +247,6 @@ namespace RecipeMan
         public class RecipeData : CreateRecipeForm.RecipeData
         {
             public int Id { get; set; }
-        }
-
-        public class RecipeDto
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string CategoryName { get; set; }
-            public int Difficulty { get; set; }
-            public string Description { get; set; }
-            public List<ImageDto> Images { get; set; } = new List<ImageDto>();
-            public List<StepDto> Steps { get; set; } = new List<StepDto>();
-        }
-
-        public class StepDto
-        {
-            public int Id { get; set; }
-            public string Title { get; set; }
-            public string Description { get; set; }
-            public int Order { get; set; }
-            public int Duration { get; set; }
-            public List<StepIngredientDto> Ingredients { get; set; } = new List<StepIngredientDto>();
-            public List<ImageDto> Images { get; set; } = new List<ImageDto>();
-        }
-
-        public class StepIngredientDto
-        {
-            public string Quantity { get; set; }
-            public string Name { get; set; }
-        }
-
-        public class ImageDto
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public byte[] Data { get; set; }
         }
     }
 }
