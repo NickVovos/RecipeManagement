@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="JsonConverter.Newtonsoft.Json" Version="0.8.0" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
   </ItemGroup>
 
 
