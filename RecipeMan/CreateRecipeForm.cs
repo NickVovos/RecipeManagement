@@ -246,6 +246,11 @@ namespace RecipeMan
             }
         }
 
+        private void InitializeComponent()
+        {
+
+        }
+
         private async void BtnSave_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtName.Text))

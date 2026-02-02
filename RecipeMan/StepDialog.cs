@@ -164,6 +164,11 @@ namespace RecipeMan
             }
         }
 
+        private void InitializeComponent()
+        {
+
+        }
+
         public StepDto GetStep()
         {
             return new StepDto

@@ -38,6 +38,11 @@ namespace RecipeMan
             Controls.AddRange(new Control[] { lblQuantity, txtQuantity, lblName, txtName, btnCancel, btnOk });
         }
 
+        private void InitializeComponent()
+        {
+
+        }
+
         public StepIngredientDto GetIngredient()
         {
             return new StepIngredientDto { Quantity = txtQuantity.Text.Trim(), Name = txtName.Text.Trim() };

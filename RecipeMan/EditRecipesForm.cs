@@ -21,8 +21,8 @@ namespace RecipeMan
             Height = 450;
             StartPosition = FormStartPosition.CenterParent;
             InitializeLayout();
-  
-            this.Load += async (s, e) => await LoadRecipes();  
+
+            this.Load += async (s, e) => await LoadRecipes();
         }
 
         private void InitializeLayout()
@@ -68,6 +68,11 @@ namespace RecipeMan
                     await LoadRecipes();
                 }
             }
+        }
+
+        private void InitializeComponent()
+        {
+
         }
 
         private async void BtnDelete_Click(object sender, EventArgs e)

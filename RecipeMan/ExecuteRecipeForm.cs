@@ -8,7 +8,7 @@ using Common.DTOs;
 
 namespace RecipeMan
 {
-    public class ViewRecipeForm : Form
+    public class ExecuteRecipeForm : Form
     {
         private ListBox lbRecipes;
         private Label lblName;
@@ -16,17 +16,14 @@ namespace RecipeMan
         private Label lblDifficulty;
         private TextBox txtDescription;
 
-        // Progress based on durations
         private ProgressBar progressRecipe;
         private Label lblProgress;
 
-        // Recipe images carousel
         private PictureBox pbRecipeImage;
         private Button btnPrevRecipeImg;
         private Button btnNextRecipeImg;
         private Label lblRecipeImgIndex;
 
-        // Step viewer
         private Label lblStepTitle;
         private TextBox txtStepDescription;
         private Label lblStepDuration;
@@ -44,9 +41,9 @@ namespace RecipeMan
         private int currentStepIndex = 0;
         private int currentStepImgIndex = 0;
 
-        public ViewRecipeForm()
+        public ExecuteRecipeForm()
         {
-            Text = "View Recipe";
+            Text = "Execute Recipe";
             Width = 1000;
             Height = 750;
             StartPosition = FormStartPosition.CenterParent;
@@ -56,11 +53,9 @@ namespace RecipeMan
 
         private void InitializeLayout()
         {
-            // Left: recipe list
             lbRecipes = new ListBox { Location = new Point(20, 20), Width = 300, Height = 660 };
             lbRecipes.SelectedIndexChanged += LbRecipes_SelectedIndexChanged;
 
-            // Right: details
             int x = 340;
             lblName = new Label { Location = new Point(x, 20), Width = 600, Font = new Font(FontFamily.GenericSansSerif, 11f, FontStyle.Bold) };
             lblCategory = new Label { Location = new Point(x, 50), Width = 300 };
@@ -68,11 +63,9 @@ namespace RecipeMan
 
             txtDescription = new TextBox { Location = new Point(x, 100), Width = 620, Height = 80, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical };
 
-            // Progress bar
             progressRecipe = new ProgressBar { Location = new Point(x, 190), Width = 620, Height = 20, Minimum = 0, Maximum = 100 };
             lblProgress = new Label { Location = new Point(x + 530, 170), Width = 90, TextAlign = ContentAlignment.MiddleRight };
 
-            // Recipe images area
             pbRecipeImage = new PictureBox { Location = new Point(x, 220), Width = 300, Height = 200, BorderStyle = BorderStyle.FixedSingle, SizeMode = PictureBoxSizeMode.Zoom };
             btnPrevRecipeImg = new Button { Text = "<", Location = new Point(x, 430), Width = 40 };
             btnNextRecipeImg = new Button { Text = ">", Location = new Point(x + 260, 430), Width = 40 };
@@ -80,7 +73,6 @@ namespace RecipeMan
             btnPrevRecipeImg.Click += (s, e) => { ChangeRecipeImage(-1); };
             btnNextRecipeImg.Click += (s, e) => { ChangeRecipeImage(1); };
 
-            // Step navigation
             lblStepTitle = new Label { Location = new Point(x + 340, 220), Width = 280, Font = new Font(FontFamily.GenericSansSerif, 10f, FontStyle.Bold) };
             lblStepDuration = new Label { Location = new Point(x + 340, 245), Width = 280 };
             lblStepIndex = new Label { Location = new Point(x + 340, 270), Width = 280 };
@@ -91,7 +83,6 @@ namespace RecipeMan
             btnPrevStep.Click += (s, e) => { ChangeStep(-1); };
             btnNextStep.Click += (s, e) => { ChangeStep(1); };
 
-            // Step images carousel
             pbStepImage = new PictureBox { Location = new Point(x + 340, 510), Width = 280, Height = 150, BorderStyle = BorderStyle.FixedSingle, SizeMode = PictureBoxSizeMode.Zoom };
             btnPrevStepImg = new Button { Text = "<", Location = new Point(x + 340, 670), Width = 40 };
             btnNextStepImg = new Button { Text = ">", Location = new Point(x + 580, 670), Width = 40 };
@@ -124,7 +115,7 @@ namespace RecipeMan
         {
             var item = lbRecipes.SelectedItem as RecipeListItem;
             if (item == null) return;
-            
+
             try
             {
                 int recipeId = await RecipeStore.GetRecipeId(item.Data.Name);
@@ -140,11 +131,11 @@ namespace RecipeMan
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to load recipe details: {ex.Message}", "Error", 
+                MessageBox.Show($"Failed to load recipe details: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 current = item.Data;
             }
-            
+
             currentRecipeImgIndex = 0;
             currentStepIndex = 0;
             currentStepImgIndex = 0;
@@ -265,7 +256,7 @@ namespace RecipeMan
                 lblProgress.Text = "0%";
                 return;
             }
-            // Include the current step's duration so first step shows its percentage and last step reaches 100%
+
             var done = steps.Take(currentStepIndex + 1).Sum(s => Math.Max(0, s.Duration));
             var percent = (int)Math.Round(done * 100.0 / total);
             percent = Math.Max(0, Math.Min(100, percent));
@@ -279,6 +270,11 @@ namespace RecipeMan
             if (index < 0) index = count - 1;
             if (index >= count) index = 0;
             return index;
+        }
+
+        private void InitializeComponent()
+        {
+
         }
 
         private static Image ByteArrayToImage(byte[] bytes)

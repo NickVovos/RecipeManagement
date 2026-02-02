@@ -32,52 +32,53 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.btnCreateRecipe = new System.Windows.Forms.Button();
-            this.btnEditRecipes = new System.Windows.Forms.Button();
-            this.btnViewRecipe = new System.Windows.Forms.Button();
-            this.SuspendLayout();
+            btnCreateRecipe = new System.Windows.Forms.Button();
+            btnEditRecipes = new System.Windows.Forms.Button();
+            btnViewRecipe = new System.Windows.Forms.Button();
+            SuspendLayout();
             // 
             // btnCreateRecipe
             // 
-            this.btnCreateRecipe.Location = new System.Drawing.Point(50, 50);
-            this.btnCreateRecipe.Name = "btnCreateRecipe";
-            this.btnCreateRecipe.Size = new System.Drawing.Size(200, 50);
-            this.btnCreateRecipe.TabIndex = 0;
-            this.btnCreateRecipe.Text = "Create Recipe";
-            this.btnCreateRecipe.UseVisualStyleBackColor = true;
-            this.btnCreateRecipe.Click += new System.EventHandler(this.btnCreateRecipe_Click);
+            btnCreateRecipe.Location = new System.Drawing.Point(50, 50);
+            btnCreateRecipe.Name = "btnCreateRecipe";
+            btnCreateRecipe.Size = new System.Drawing.Size(200, 50);
+            btnCreateRecipe.TabIndex = 0;
+            btnCreateRecipe.Text = "Create Recipe";
+            btnCreateRecipe.UseVisualStyleBackColor = true;
+            btnCreateRecipe.Click += btnCreateRecipe_Click;
             // 
             // btnEditRecipes
             // 
-            this.btnEditRecipes.Location = new System.Drawing.Point(50, 120);
-            this.btnEditRecipes.Name = "btnEditRecipes";
-            this.btnEditRecipes.Size = new System.Drawing.Size(200, 50);
-            this.btnEditRecipes.TabIndex = 1;
-            this.btnEditRecipes.Text = "Edit Recipes";
-            this.btnEditRecipes.UseVisualStyleBackColor = true;
-            this.btnEditRecipes.Click += new System.EventHandler(this.btnEditRecipes_Click);
+            btnEditRecipes.Location = new System.Drawing.Point(50, 120);
+            btnEditRecipes.Name = "btnEditRecipes";
+            btnEditRecipes.Size = new System.Drawing.Size(200, 50);
+            btnEditRecipes.TabIndex = 1;
+            btnEditRecipes.Text = "Edit Recipes";
+            btnEditRecipes.UseVisualStyleBackColor = true;
+            btnEditRecipes.Click += btnEditRecipes_Click;
             // 
             // btnViewRecipe
             // 
-            this.btnViewRecipe.Location = new System.Drawing.Point(50, 190);
-            this.btnViewRecipe.Name = "btnViewRecipe";
-            this.btnViewRecipe.Size = new System.Drawing.Size(200, 50);
-            this.btnViewRecipe.TabIndex = 2;
-            this.btnViewRecipe.Text = "View Recipe";
-            this.btnViewRecipe.UseVisualStyleBackColor = true;
-            this.btnViewRecipe.Click += new System.EventHandler(this.btnViewRecipe_Click);
+            btnViewRecipe.Location = new System.Drawing.Point(50, 190);
+            btnViewRecipe.Name = "btnViewRecipe";
+            btnViewRecipe.Size = new System.Drawing.Size(200, 50);
+            btnViewRecipe.TabIndex = 2;
+            btnViewRecipe.Text = "Execute Recipe";
+            btnViewRecipe.UseVisualStyleBackColor = true;
+            btnViewRecipe.Click += btnViewRecipe_Click;
             // 
             // Form1
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.btnViewRecipe);
-            this.Controls.Add(this.btnEditRecipes);
-            this.Controls.Add(this.btnCreateRecipe);
-            this.Name = "Form1";
-            this.Text = "Recipe Management";
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(800, 450);
+            Controls.Add(btnViewRecipe);
+            Controls.Add(btnEditRecipes);
+            Controls.Add(btnCreateRecipe);
+            Name = "Form1";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            Text = "Recipe Management";
+            ResumeLayout(false);
         }
 
         #endregion

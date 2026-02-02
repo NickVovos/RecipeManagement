@@ -35,7 +35,7 @@ namespace RecipeMan
 
         private void btnViewRecipe_Click(object sender, EventArgs e)
         {
-            using (var form = new ViewRecipeForm())
+            using (var form = new ExecuteRecipeForm())
             {
                 form.ShowDialog(this);
             }
