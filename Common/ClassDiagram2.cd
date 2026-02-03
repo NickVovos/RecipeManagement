@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Common.Models.BaseEntity">
+    <Position X="9.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Entities\BaseEntity.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Common.Models.Image">
+    <Position X="9.75" Y="6.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIAAAAAQAIAAAABAAAAAAAAAAABA=</HashCode>
+      <FileName>Entities\Image.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Common.Models.Ingredient">
+    <Position X="15.25" Y="2.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAQAAAAAAAAAAAAAgAAAABA=</HashCode>
+      <FileName>Entities\Ingredient.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Common.Models.Recipe">
+    <Position X="7.25" Y="2.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAIAACgAQAAAIAAAAQAACAAABAAAAAAAAAAABA=</HashCode>
+      <FileName>Entities\Recipe.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Difficulty" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Steps" />
+      <Property Name="Images" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Common.Models.Step">
+    <Position X="12" Y="2.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAgAAiAEAAAAAAACAAAAAAABAAAAAAAAAAABA=</HashCode>
+      <FileName>Entities\Step.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Ingredients" />
+      <Property Name="Images" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Enum Name="Common.Models.RecipeDifficulty">
+    <Position X="4.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAA=</HashCode>
+      <FileName>Entities\RecipeDifficulty.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

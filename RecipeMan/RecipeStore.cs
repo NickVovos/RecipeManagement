@@ -1,177 +1,125 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using Common.DTOs;
+using RecipeMan.Services;
+using Common.Models;
 
 namespace RecipeMan
 {
     public static class RecipeStore
     {
-        private static Dictionary<string, int> _recipeIdMap = new Dictionary<string, int>();
+        private static readonly IRecipeService _recipeService = ServiceFactory.GetRecipeService();
 
-        public static IReadOnlyList<CreateRecipeForm.RecipeData> All
+        public static async Task<IReadOnlyList<RecipeDto>> GetAll()
         {
-            get
-            {
-                try
-                {
-                    var apiRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
-                    _recipeIdMap.Clear();
-                    var recipeList = new List<CreateRecipeForm.RecipeData>();
-                    
-                    foreach (var apiRecipe in apiRecipes)
-                    {
-                        var recipeData = new CreateRecipeForm.RecipeData
-                        {
-                            Name = apiRecipe.Name,
-                            CategoryName = apiRecipe.CategoryName,
-                            Difficulty = apiRecipe.Difficulty,
-                            Description = apiRecipe.Description,
-                            Images = apiRecipe.Images,
-                            Steps = apiRecipe.Steps
-                        };
-                        _recipeIdMap[apiRecipe.Name] = apiRecipe.Id;
-                        recipeList.Add(recipeData);
-                    }
-                    
-                    return recipeList;
-                }
-                catch (System.Exception ex)
-                {
-                    MessageBox.Show($"Failed to load recipes from API: {ex.Message}\n\nMake sure the RecipeApi is running on https://localhost:44352", 
-                        "API Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return new List<CreateRecipeForm.RecipeData>();
-                }
-            }
+            var recipes = await _recipeService.GetAllRecipesAsync();
+            return recipes.Select(ConvertToFormData).ToList();
         }
 
-        public static void Add(CreateRecipeForm.RecipeData recipe)
+        public static async Task Add(RecipeDto recipe)
         {
-            try
-            {
-                var id = Task.Run(async () => await RecipeApiClient.CreateRecipeAsync(recipe)).Result;
-                _recipeIdMap[recipe.Name] = id;
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show($"Failed to create recipe: {ex.Message}", "API Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                throw;
-            }
+            var domainRecipe = ConvertToDomainModel(recipe);
+            await _recipeService.CreateRecipeAsync(domainRecipe);
         }
 
-        public static void Update(CreateRecipeForm.RecipeData existing, CreateRecipeForm.RecipeData updated)
+        public static async Task Update(RecipeDto existing, RecipeDto updated)
         {
-            try
-            {
-                int id;
-                if (_recipeIdMap.TryGetValue(existing.Name, out id))
-                {
-                    Task.Run(async () => await RecipeApiClient.UpdateRecipeAsync(id, updated)).Wait();
-                    
-                    if (existing.Name != updated.Name)
-                    {
-                        _recipeIdMap.Remove(existing.Name);
-                    }
-                    _recipeIdMap[updated.Name] = id;
-                }
-                else
-                {
-                    var allRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
-                    var apiRecipe = allRecipes.FirstOrDefault(r => r.Name == existing.Name);
-                    
-                    if (apiRecipe == null)
-                    {
-                        MessageBox.Show("Recipe not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
+            int id = await _recipeService.GetRecipeIdByNameAsync(existing.Name);
+            if (id == 0)
+                throw new InvalidOperationException("Recipe not found");
 
-                    Task.Run(async () => await RecipeApiClient.UpdateRecipeAsync(apiRecipe.Id, updated)).Wait();
-                    _recipeIdMap[updated.Name] = apiRecipe.Id;
-                }
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show($"Failed to update recipe: {ex.Message}", "API Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                throw;
-            }
+            var domainRecipe = ConvertToDomainModel(updated);
+            domainRecipe.Id = id;
+            await _recipeService.UpdateRecipeAsync(domainRecipe);
         }
 
-        public static void Remove(CreateRecipeForm.RecipeData recipe)
+        public static async Task Remove(RecipeDto recipe)
         {
-            try
-            {
-                int id;
-                if (_recipeIdMap.TryGetValue(recipe.Name, out id))
-                {
-                    Task.Run(async () => await RecipeApiClient.DeleteRecipeAsync(id)).Wait();
-                    _recipeIdMap.Remove(recipe.Name);
-                }
-                else
-                {
-                    var allRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
-                    var apiRecipe = allRecipes.FirstOrDefault(r => r.Name == recipe.Name);
-                    
-                    if (apiRecipe != null && apiRecipe.Id > 0)
-                    {
-                        Task.Run(async () => await RecipeApiClient.DeleteRecipeAsync(apiRecipe.Id)).Wait();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Recipe not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show($"Failed to delete recipe: {ex.Message}", "API Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                throw;
-            }
+            int id = await _recipeService.GetRecipeIdByNameAsync(recipe.Name);
+            if (id == 0)
+                throw new InvalidOperationException("Recipe not found");
+
+            await _recipeService.DeleteRecipeAsync(id);
         }
 
-        public static CreateRecipeForm.RecipeData Clone(CreateRecipeForm.RecipeData recipe)
+        public static RecipeDto Clone(RecipeDto recipe)
         {
-            return new CreateRecipeForm.RecipeData
+            var domainRecipe = ConvertToDomainModel(recipe);
+            var cloned = (Recipe)domainRecipe.Clone();
+            return ConvertToFormData(cloned);
+        }
+
+        public static async Task<int> GetRecipeId(string recipeName)
+        {
+            return await _recipeService.GetRecipeIdByNameAsync(recipeName);
+        }
+
+        private static RecipeDto ConvertToFormData(Recipe recipe)
+        {
+            return new RecipeDto
             {
                 Name = recipe.Name,
                 CategoryName = recipe.CategoryName,
-                Difficulty = recipe.Difficulty,
+                Difficulty = (Difficulty)recipe.Difficulty,
                 Description = recipe.Description,
-                Images = recipe.Images?.Select(i => new CreateRecipeForm.ImageData { Name = i.Name, Data = i.Data }).ToList() ?? new List<CreateRecipeForm.ImageData>(),
-                Steps = recipe.Steps?.Select(s => new CreateRecipeForm.StepData
+                Images = recipe.Images?.Select(i => new ImageDto
+                {
+                    Name = i.Name,
+                    Data = i.Data
+                }).ToList() ?? new List<ImageDto>(),
+                Steps = recipe.Steps?.Select(s => new StepDto
                 {
                     Order = s.Order,
                     Title = s.Title,
                     Description = s.Description,
                     Duration = s.Duration,
-                    Ingredients = s.Ingredients?.Select(i => new CreateRecipeForm.IngredientData { Quantity = i.Quantity, Name = i.Name }).ToList() ?? new List<CreateRecipeForm.IngredientData>(),
-                    Images = s.Images?.Select(i => new CreateRecipeForm.ImageData { Name = i.Name, Data = i.Data }).ToList() ?? new List<CreateRecipeForm.ImageData>()
-                }).ToList() ?? new List<CreateRecipeForm.StepData>()
+                    Ingredients = s.Ingredients?.Select(ing => new StepIngredientDto()
+                    {
+                        Quantity = ing.Quantity,
+                        Name = ing.Name
+                    }).ToList() ?? new List<StepIngredientDto>(),
+                    Images = s.Images?.Select(i => new ImageDto
+                    {
+                        Name = i.Name,
+                        Data = i.Data
+                    }).ToList() ?? new List<ImageDto>()
+                }).ToList() ?? new List<StepDto>()
             };
         }
 
-        public static int GetRecipeId(string recipeName)
+        private static Recipe ConvertToDomainModel(RecipeDto formData)
         {
-            int id;
-            if (_recipeIdMap.TryGetValue(recipeName, out id))
+            return new Recipe
             {
-                return id;
-            }
-
-            try
-            {
-                var allRecipes = Task.Run(async () => await RecipeApiClient.GetAllRecipesAsync()).Result;
-                var apiRecipe = allRecipes.FirstOrDefault(r => r.Name == recipeName);
-                if (apiRecipe != null)
+                Name = formData.Name,
+                CategoryName = formData.CategoryName,
+                Difficulty = (RecipeDifficulty)formData.Difficulty,
+                Description = formData.Description,
+                Images = formData.Images?.Select(i => new Image
                 {
-                    _recipeIdMap[recipeName] = apiRecipe.Id;
-                    return apiRecipe.Id;
-                }
-            }
-            catch
-            {
-            }
-
-            return 0;
+                    Name = i.Name,
+                    Data = i.Data
+                }).ToList() ?? new List<Image>(),
+                Steps = formData.Steps?.Select(s => new Step
+                {
+                    Order = s.Order,
+                    Title = s.Title,
+                    Description = s.Description,
+                    Duration = s.Duration,
+                    Ingredients = s.Ingredients?.Select(ing => new Ingredient
+                    {
+                        Quantity = ing.Quantity,
+                        Name = ing.Name
+                    }).ToList() ?? new List<Ingredient>(),
+                    Images = s.Images?.Select(i => new Image
+                    {
+                        Name = i.Name,
+                        Data = i.Data
+                    }).ToList() ?? new List<Image>()
+                }).ToList() ?? new List<Step>()
+            };
         }
     }
 }

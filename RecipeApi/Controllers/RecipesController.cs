@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RecipeApi.Data;
-using RecipeApi.Models;
+using Common.DTOs;
 using System.Collections.Generic;
 
 namespace RecipeApi.Controllers

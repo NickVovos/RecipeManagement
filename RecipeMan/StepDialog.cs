@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Common.DTOs;
 
 namespace RecipeMan
 {
@@ -21,8 +22,8 @@ namespace RecipeMan
         private Button btnOk;
         private Button btnCancel;
 
-        private readonly List<CreateRecipeForm.IngredientData> ingredients = new List<CreateRecipeForm.IngredientData>();
-        private readonly List<CreateRecipeForm.ImageData> images = new List<CreateRecipeForm.ImageData>();
+        private readonly List<StepIngredientDto> ingredients = new List<StepIngredientDto>();
+        private readonly List<ImageDto> images = new List<ImageDto>();
 
         public StepDialog()
         {
@@ -33,7 +34,7 @@ namespace RecipeMan
             InitializeLayout();
         }
 
-        public StepDialog(CreateRecipeForm.StepData existing) : this()
+        public StepDialog(StepDto existing) : this()
         {
             Text = "Edit Step";
             Populate(existing);
@@ -88,7 +89,7 @@ namespace RecipeMan
             });
         }
 
-        private void Populate(CreateRecipeForm.StepData step)
+        private void Populate(StepDto step)
         {
             if (step == null) return;
             txtTitle.Text = step.Title;
@@ -100,7 +101,7 @@ namespace RecipeMan
             {
                 foreach (var ing in step.Ingredients)
                 {
-                    ingredients.Add(new CreateRecipeForm.IngredientData { Quantity = ing.Quantity, Name = ing.Name });
+                    ingredients.Add(new StepIngredientDto() { Quantity = ing.Quantity, Name = ing.Name });
                     lvIngredients.Items.Add(new ListViewItem(new[] { ing.Quantity, ing.Name }));
                 }
             }
@@ -108,7 +109,7 @@ namespace RecipeMan
             {
                 foreach (var img in step.Images)
                 {
-                    images.Add(new CreateRecipeForm.ImageData { Name = img.Name, Data = img.Data });
+                    images.Add(new ImageDto { Name = img.Name, Data = img.Data });
                     lvImages.Items.Add(new ListViewItem(new[] { img.Name, (img.Data?.Length ?? 0).ToString() + " bytes" }));
                 }
             }
@@ -145,7 +146,7 @@ namespace RecipeMan
             if (ofd.ShowDialog(this) == DialogResult.OK)
             {
                 var bytes = File.ReadAllBytes(ofd.FileName);
-                var img = new CreateRecipeForm.ImageData { Name = System.IO.Path.GetFileName(ofd.FileName), Data = bytes };
+                var img = new ImageDto { Name = System.IO.Path.GetFileName(ofd.FileName), Data = bytes };
                 images.Add(img);
                 var item = new ListViewItem(new[] { img.Name, (img.Data?.Length ?? 0).ToString() + " bytes" });
                 lvImages.Items.Add(item);
@@ -163,9 +164,14 @@ namespace RecipeMan
             }
         }
 
-        public CreateRecipeForm.StepData GetStep()
+        private void InitializeComponent()
         {
-            return new CreateRecipeForm.StepData
+
+        }
+
+        public StepDto GetStep()
+        {
+            return new StepDto
             {
                 Title = txtTitle.Text.Trim(),
                 Description = txtDescription.Text.Trim(),

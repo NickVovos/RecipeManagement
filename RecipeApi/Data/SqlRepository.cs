@@ -1,4 +1,5 @@
-using RecipeApi.Models;
+using Common.DTOs;
+using Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;

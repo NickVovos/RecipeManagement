@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Common.DTOs;
 
 namespace RecipeMan
 {
@@ -37,9 +38,14 @@ namespace RecipeMan
             Controls.AddRange(new Control[] { lblQuantity, txtQuantity, lblName, txtName, btnCancel, btnOk });
         }
 
-        public CreateRecipeForm.IngredientData GetIngredient()
+        private void InitializeComponent()
         {
-            return new CreateRecipeForm.IngredientData { Quantity = txtQuantity.Text.Trim(), Name = txtName.Text.Trim() };
+
+        }
+
+        public StepIngredientDto GetIngredient()
+        {
+            return new StepIngredientDto { Quantity = txtQuantity.Text.Trim(), Name = txtName.Text.Trim() };
         }
     }
 }

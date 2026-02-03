@@ -1,7 +1,9 @@
 using System;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using Common.DTOs;
 
 namespace RecipeMan
 {
@@ -19,7 +21,8 @@ namespace RecipeMan
             Height = 450;
             StartPosition = FormStartPosition.CenterParent;
             InitializeLayout();
-            LoadRecipes();
+
+            this.Load += async (s, e) => await LoadRecipes();
         }
 
         private void InitializeLayout()
@@ -39,16 +42,16 @@ namespace RecipeMan
             Controls.Add(btnClose);
         }
 
-        private void LoadRecipes()
+        private async Task LoadRecipes()
         {
             lbRecipes.Items.Clear();
-            foreach (var r in RecipeStore.All)
+            foreach (var r in await RecipeStore.GetAll())
             {
                 lbRecipes.Items.Add(new RecipeListItem(r));
             }
         }
 
-        private void BtnEdit_Click(object sender, EventArgs e)
+        private async void BtnEdit_Click(object sender, EventArgs e)
         {
             var item = lbRecipes.SelectedItem as RecipeListItem;
             if (item == null)
@@ -57,19 +60,22 @@ namespace RecipeMan
                 return;
             }
 
-            // Work on a copy in the edit form, but let the form handle saving/updating to the store.
             var recipeCopy = RecipeStore.Clone(item.Data);
             using (var form = new CreateRecipeForm(recipeCopy))
             {
                 if (form.ShowDialog(this) == DialogResult.OK)
                 {
-                    // Do not overwrite with the pre-edit copy. Just refresh the list from the store.
-                    LoadRecipes();
+                    await LoadRecipes();
                 }
             }
         }
 
-        private void BtnDelete_Click(object sender, EventArgs e)
+        private void InitializeComponent()
+        {
+
+        }
+
+        private async void BtnDelete_Click(object sender, EventArgs e)
         {
             var item = lbRecipes.SelectedItem as RecipeListItem;
             if (item == null)
@@ -81,15 +87,15 @@ namespace RecipeMan
             var confirm = MessageBox.Show($"Delete recipe '{item.Data.Name}'?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (confirm == DialogResult.Yes)
             {
-                RecipeStore.Remove(item.Data);
-                LoadRecipes();
+                await RecipeStore.Remove(item.Data);
+                await LoadRecipes();
             }
         }
 
         private class RecipeListItem
         {
-            public CreateRecipeForm.RecipeData Data { get; }
-            public RecipeListItem(CreateRecipeForm.RecipeData data) { Data = data; }
+            public RecipeDto Data { get; }
+            public RecipeListItem(RecipeDto data) { Data = data; }
             public override string ToString()
             {
                 var total = Data?.Steps?.Sum(s => s.Duration) ?? 0;
