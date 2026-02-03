@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Common.Models.BaseEntity" Collapsed="true">
+  <Class Name="Common.Models.BaseEntity">
     <Position X="9.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
@@ -9,7 +9,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Common.Models.Image">
-    <Position X="9.75" Y="6.5" Width="1.5" />
+    <Position X="9.75" Y="6.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAIAAAAAQAIAAAABAAAAAAAAAAABA=</HashCode>
       <FileName>Entities\Image.cs</FileName>
@@ -44,8 +44,8 @@
       <FileName>Entities\Step.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
-      <Property Name="Images" />
       <Property Name="Ingredients" />
+      <Property Name="Images" />
     </ShowAsCollectionAssociation>
   </Class>
   <Enum Name="Common.Models.RecipeDifficulty">
