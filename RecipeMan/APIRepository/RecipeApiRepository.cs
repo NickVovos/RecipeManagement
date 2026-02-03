@@ -120,27 +120,32 @@ namespace RecipeMan.Repository
                 CategoryName = recipe.CategoryName,
                 Difficulty = (Difficulty)recipe.Difficulty,
                 Description = recipe.Description,
-                Images = recipe.Images?.Select(i => new ImageDto()
-                {
-                    Name = i.Name,
-                    Data = i.Data
-                }).ToList() ?? new List<ImageDto>(),
+                Images = recipe.Images?
+                    .Where(i => i.Data != null && i.Data.Length > 0)
+                    .Select(i => new ImageDto
+                    {
+                        Name = i.Name,
+                        Data = i.Data
+                    }).ToList() ?? new List<ImageDto>(),
                 Steps = recipe.Steps?.Select(s => new StepDto
                 {
                     Order = s.Order,
                     Title = s.Title,
                     Description = s.Description,
                     Duration = s.Duration,
-                    Ingredients = s.Ingredients?.Select(ing => new StepIngredientDto()
+                    Ingredients = s.Ingredients?.Select(ing => new StepIngredientDto
                     {
                         Quantity = ing.Quantity,
                         Name = ing.Name
                     }).ToList() ?? new List<StepIngredientDto>(),
-                    Images = s.Images?.Select(i => new ImageDto
-                    {
-                        Name = i.Name,
-                        Data = i.Data
-                    }).ToList() ?? new List<ImageDto>()
+
+                    Images = s.Images?
+                        .Where(i => i.Data != null && i.Data.Length > 0)
+                        .Select(i => new ImageDto
+                        {
+                            Name = i.Name,
+                            Data = i.Data
+                        }).ToList() ?? new List<ImageDto>()
                 }).ToList() ?? new List<StepDto>()
             };
         }
@@ -148,7 +153,7 @@ namespace RecipeMan.Repository
 
     public class RepositoryException : Exception
     {
-        public RepositoryException(string message, Exception innerException) 
+        public RepositoryException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
